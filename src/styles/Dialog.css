@@ -1,0 +1,225 @@
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.dialog-overlay[data-state='closed'] {
+  animation: fadeOut 0.15s ease-in;
+}
+
+/* Dialog Content */
+.dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 50;
+  display: grid;
+  width: 100%;
+  max-height: 90vh;
+  transform: translate(-50%, -50%);
+  gap: 1rem;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5625rem;
+  animation: dialogEnter 0.15s ease-out;
+}
+
+.dialog-content[data-state='closed'] {
+  animation: dialogExit 0.15s ease-in;
+}
+
+/* Dialog Sizes */
+.dialog-sm {
+  max-width: 28rem; /* 448px */
+}
+
+.dialog-md {
+  max-width: 42rem; /* 672px */
+}
+
+.dialog-lg {
+  max-width: 56rem; /* 896px */
+}
+
+.dialog-xl {
+  max-width: 72rem; /* 1152px */
+}
+
+/* Dialog Header */
+.dialog-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dialog-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Dialog Body */
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Close Button */
+.dialog-close-button {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.dialog-close-button:hover {
+  background-color: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.dialog-close-button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogEnter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dialogExit {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1199px) and (min-width: 769px) {
+  .dialog-lg,
+  .dialog-xl {
+    max-width: 85%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog-content {
+    max-width: calc(100% - 2rem);
+    max-height: calc(100vh - 2rem);
+    padding: 1rem;
+  }
+
+  .dialog-title {
+    font-size: 1.25rem;
+  }
+  
+  .dialog-description {
+    font-size: 0.8125rem;
+  }
+  
+  .dialog-sm,
+  .dialog-md,
+  .dialog-lg,
+  .dialog-xl {
+    max-width: calc(100% - 2rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog-content {
+    max-width: calc(100% - 1rem);
+    max-height: calc(100vh - 1rem);
+    padding: 0.875rem;
+  }
+  
+  .dialog-title {
+    font-size: 1.125rem;
+  }
+  
+  .dialog-description {
+    font-size: 0.75rem;
+  }
+  
+  .dialog-close-button {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+}
+
+/* Custom scrollbar for dialog content */
+.dialog-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dialog-content::-webkit-scrollbar-track {
+  background: var(--hover-bg);
+  border-radius: 4px;
+}
+
+.dialog-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.dialog-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
