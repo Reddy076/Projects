@@ -28,6 +28,7 @@ export function ThemeProvider({ children }) {
 
   /**
    * Load saved theme preference on mount
+   * Defaults to light mode if no preference is saved
    */
   useEffect(() => {
     try {
@@ -37,22 +38,16 @@ export function ThemeProvider({ children }) {
       if (savedTheme === 'dark') {
         setDarkMode(true)
         document.documentElement.classList.add('dark-mode')
-      } else if (savedTheme === 'light') {
+      } else {
+        // Default to light mode (no system preference check)
         setDarkMode(false)
         document.documentElement.classList.remove('dark-mode')
-      } else {
-        // Check system preference if no saved preference
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        if (prefersDark) {
-          setDarkMode(true)
-          document.documentElement.classList.add('dark-mode')
-          localStorage.setItem('theme', 'dark')
-        }
       }
     } catch (error) {
       console.error('Error loading theme preference:', error)
       // Default to light mode on error
       setDarkMode(false)
+      document.documentElement.classList.remove('dark-mode')
     }
   }, [])
 
