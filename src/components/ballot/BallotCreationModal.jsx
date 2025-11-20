@@ -7,6 +7,20 @@ import '../../styles/BallotCreationModal.css'
 // STEP COMPONENTS - Each step is a separate component for better organization
 // ============================================================================
 
+/**
+ * Step1BasicInfo Component
+ * 
+ * First step of ballot creation - collects basic information:
+ * - Ballot title and description
+ * - Voting deadline (date and time)
+ * - Corporation selection
+ * - Notice giver details
+ * - Secretary information
+ * 
+ * @param {Object} formData - Form data object
+ * @param {Function} handleInputChange - Input change handler
+ * @param {Object} errors - Validation errors object
+ */
 const Step1BasicInfo = ({ formData, handleInputChange, errors }) => (
   <div className="step-content">
     <div className="form-group">
@@ -160,6 +174,20 @@ const Step1BasicInfo = ({ formData, handleInputChange, errors }) => (
 // MOTION CARD COMPONENT
 // ============================================================================
 
+/**
+ * MotionCard Component
+ * 
+ * Displays a single motion card with:
+ * - Motion title and description
+ * - Hurdle rate
+ * - Attachment count
+ * - Edit and remove actions
+ * 
+ * @param {Object} motion - Motion object
+ * @param {number} index - Motion index
+ * @param {Function} onEdit - Edit handler
+ * @param {Function} onRemove - Remove handler
+ */
 const MotionCard = ({ motion, index, onEdit, onRemove }) => (
   <div className="motion-card">
     <div className="motion-card-header">
@@ -196,6 +224,23 @@ const MotionCard = ({ motion, index, onEdit, onRemove }) => (
 // STEP 2 - MOTIONS
 // ============================================================================
 
+/**
+ * Step2Motions Component
+ * 
+ * Second step of ballot creation - manage motions:
+ * - Add new motions with title, description, and hurdle rate
+ * - Attach files to motions
+ * - View, edit, and remove existing motions
+ * - Requires at least one motion to proceed
+ * 
+ * @param {Array} motions - Array of added motions
+ * @param {Object} newMotion - Current motion being added
+ * @param {Function} onMotionInputChange - Motion input change handler
+ * @param {Function} onFileChange - File input change handler
+ * @param {Function} onAddMotion - Add motion handler
+ * @param {Function} onEditMotion - Edit motion handler
+ * @param {Function} onRemoveMotion - Remove motion handler
+ */
 const Step2Motions = ({ 
   motions, 
   newMotion, 
@@ -303,6 +348,24 @@ const Step2Motions = ({
 // STEP 3 - ATTACHMENTS
 // ============================================================================
 
+/**
+ * Step3Attachments Component
+ * 
+ * Third step of ballot creation - attach general documents:
+ * - Drag and drop file upload
+ * - Browse for files
+ * - View uploaded files with size
+ * - Remove attachments
+ * - Optional step
+ * 
+ * @param {Array} generalAttachments - Array of uploaded files
+ * @param {boolean} isDragging - Drag state indicator
+ * @param {Function} onDragOver - Drag over handler
+ * @param {Function} onDragLeave - Drag leave handler
+ * @param {Function} onDrop - Drop handler
+ * @param {Function} onFileChange - File input change handler
+ * @param {Function} onRemoveAttachment - Remove attachment handler
+ */
 const Step3Attachments = ({ 
   generalAttachments, 
   isDragging, 
@@ -370,6 +433,20 @@ const Step3Attachments = ({
 // STEP 4 - REVIEW
 // ============================================================================
 
+/**
+ * Step4Review Component
+ * 
+ * Fourth step of ballot creation - review all details:
+ * - Ballot details summary
+ * - Notice giver information
+ * - List of motions
+ * - Attached files
+ * - Final check before publishing
+ * 
+ * @param {Object} formData - Complete form data
+ * @param {Array} motions - Array of motions
+ * @param {Array} generalAttachments - Array of attachments
+ */
 const Step4Review = ({ formData, motions, generalAttachments }) => (
   <div className="step-content">
     <div className="review-page-header">
@@ -478,8 +555,34 @@ const Step4Review = ({ formData, motions, generalAttachments }) => (
 // MAIN MODAL COMPONENT
 // ============================================================================
 
+/**
+ * BallotCreationModal Component
+ * 
+ * Multi-step modal for creating a new ballot.
+ * 
+ * Steps:
+ * 1. Basic Info - Title, description, deadline, corporation
+ * 2. Motions - Add motions for voting
+ * 3. Attachments - Upload supporting documents
+ * 4. Review - Review all information before publishing
+ * 
+ * Features:
+ * - Step-by-step wizard interface
+ * - Form validation
+ * - Progress indicator
+ * - Draft saving capability
+ * - Drag-and-drop file upload
+ * - Edit motion functionality
+ * 
+ * @param {boolean} isOpen - Controls modal visibility
+ * @param {Function} onClose - Callback to close modal
+ * @param {Function} onSubmit - Callback when ballot is published
+ */
 const BallotCreationModal = React.memo(({ isOpen, onClose, onSubmit }) => {
-  // State Management
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+  
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     title: '',
@@ -504,184 +607,452 @@ const BallotCreationModal = React.memo(({ isOpen, onClose, onSubmit }) => {
   const [isDragging, setIsDragging] = useState(false)
   const [errors, setErrors] = useState({})
 
-  // Event Handlers
+  // ============================================================================
+  // EVENT HANDLERS
+  // ============================================================================
+
+  /**
+   * Handle form input change
+   * @param {Event} e - Input change event
+   */
   const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }, [])
+    try {
+      const { name, value } = e.target
+      
+      if (!name) {
+        console.error('Input element missing name attribute')
+        return
+      }
 
+      setFormData(prev => ({ ...prev, [name]: value }))
+      
+      // Clear error for this field if it exists
+      if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: undefined }))
+      }
+    } catch (error) {
+      console.error('Error handling input change:', error)
+    }
+  }, [errors])
+
+  /**
+   * Handle motion input change
+   * @param {Event} e - Input change event
+   */
   const handleMotionInputChange = useCallback((e) => {
-    const { name, value } = e.target
-    setNewMotion(prev => ({ ...prev, [name]: value }))
+    try {
+      const { name, value } = e.target
+      
+      if (!name) {
+        console.error('Input element missing name attribute')
+        return
+      }
+
+      setNewMotion(prev => ({ ...prev, [name]: value }))
+    } catch (error) {
+      console.error('Error handling motion input change:', error)
+    }
   }, [])
 
+  /**
+   * Handle motion file attachment
+   * @param {Event} e - File input change event
+   */
   const handleFileChange = useCallback((e) => {
-    const files = Array.from(e.target.files)
-    setNewMotion(prev => ({ ...prev, attachments: files }))
+    try {
+      if (!e.target.files || e.target.files.length === 0) {
+        return
+      }
+
+      const files = Array.from(e.target.files)
+      setNewMotion(prev => ({ ...prev, attachments: files }))
+    } catch (error) {
+      console.error('Error handling file change:', error)
+      alert('Failed to attach files. Please try again.')
+    }
   }, [])
 
+  /**
+   * Add a new motion to the list
+   */
   const handleAddMotion = useCallback(() => {
-    if (newMotion.title && newMotion.description && newMotion.hurdleRate) {
+    try {
+      // Validate motion data
+      if (!newMotion.title || !newMotion.title.trim()) {
+        alert('Please enter a motion title')
+        return
+      }
+
+      if (!newMotion.description || !newMotion.description.trim()) {
+        alert('Please enter a motion description')
+        return
+      }
+
+      if (!newMotion.hurdleRate || isNaN(newMotion.hurdleRate)) {
+        alert('Please enter a valid hurdle rate')
+        return
+      }
+
+      const hurdleRate = parseFloat(newMotion.hurdleRate)
+      if (hurdleRate < 0 || hurdleRate > 100) {
+        alert('Hurdle rate must be between 0 and 100')
+        return
+      }
+
+      // Add motion with unique ID
       setMotions(prev => [...prev, { ...newMotion, id: Date.now() }])
+      
+      // Reset form
       setNewMotion({ title: '', description: '', hurdleRate: '', attachments: [] })
+    } catch (error) {
+      console.error('Error adding motion:', error)
+      alert('Failed to add motion. Please try again.')
     }
   }, [newMotion])
 
+  /**
+   * Remove a motion from the list
+   * @param {number} id - Motion ID to remove
+   */
   const handleRemoveMotion = useCallback((id) => {
-    setMotions(prev => prev.filter(motion => motion.id !== id))
-  }, [])
-
-  const handleEditMotion = useCallback((motion) => {
-    setNewMotion({
-      title: motion.title,
-      description: motion.description,
-      hurdleRate: motion.hurdleRate,
-      attachments: motion.attachments
-    })
-    setMotions(prev => prev.filter(m => m.id !== motion.id))
-  }, [])
-
-  const handleGeneralAttachmentChange = useCallback((e) => {
-    const files = Array.from(e.target.files)
-    setGeneralAttachments(prev => [...prev, ...files])
-  }, [])
-
-  const handleRemoveGeneralAttachment = useCallback((index) => {
-    setGeneralAttachments(prev => prev.filter((_, i) => i !== index))
-  }, [])
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }, [])
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }, [])
-
-  const handleDrop = useCallback((e) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const files = Array.from(e.dataTransfer.files)
-    setGeneralAttachments(prev => [...prev, ...files])
-  }, [])
-
-  const handleNext = useCallback(() => {
-    // Clear previous errors
-    setErrors({})
-    
-    // Validate Step 1
-    if (currentStep === 1) {
-      const newErrors = {}
-      
-      if (!formData.title || formData.title.trim().length < 5) {
-        newErrors.title = 'Ballot title must be at least 5 characters'
-      }
-      
-      if (!formData.description || formData.description.trim().length < 10) {
-        newErrors.description = 'Ballot description must be at least 10 characters'
-      }
-      
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors)
+    try {
+      if (!id) {
+        console.error('No motion ID provided')
         return
       }
-    }
-    
-    // Validate Step 2
-    if (currentStep === 2 && motions.length === 0) {
-      alert('Please add at least one motion before continuing.')
-      return
-    }
-    
-    if (currentStep < 4) setCurrentStep(currentStep + 1)
-  }, [currentStep, motions.length, formData.title, formData.description])
 
-  const handleBack = useCallback(() => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1)
-  }, [currentStep])
-
-  const handleSaveDraft = useCallback(() => {
-    console.log('Saving draft...')
+      setMotions(prev => prev.filter(motion => motion.id !== id))
+    } catch (error) {
+      console.error('Error removing motion:', error)
+      alert('Failed to remove motion. Please try again.')
+    }
   }, [])
 
-  const handleSubmit = useCallback(() => {
-    const ballotData = {
-      title: formData.title,
-      description: formData.description,
-      deadlineDate: formData.deadlineDate,
-      deadlineTime: formData.deadlineTime,
-      corporation: formData.corporation,
-      personName: formData.personName,
-      personPosition: formData.personPosition,
-      personAddress: formData.personAddress,
-      personContact: formData.personContact,
-      secretaryName: formData.secretaryName,
-      motions: motions,
-      attachments: generalAttachments
+  /**
+   * Edit an existing motion
+   * @param {Object} motion - Motion to edit
+   */
+  const handleEditMotion = useCallback((motion) => {
+    try {
+      if (!motion || !motion.id) {
+        console.error('Invalid motion object')
+        return
+      }
+
+      // Populate form with motion data
+      setNewMotion({
+        title: motion.title || '',
+        description: motion.description || '',
+        hurdleRate: motion.hurdleRate || '',
+        attachments: motion.attachments || []
+      })
+      
+      // Remove motion from list (will be re-added when saved)
+      setMotions(prev => prev.filter(m => m.id !== motion.id))
+    } catch (error) {
+      console.error('Error editing motion:', error)
+      alert('Failed to edit motion. Please try again.')
     }
-    onSubmit(ballotData)
+  }, [])
+
+  /**
+   * Handle general attachment file selection
+   * @param {Event} e - File input change event
+   */
+  const handleGeneralAttachmentChange = useCallback((e) => {
+    try {
+      if (!e.target.files || e.target.files.length === 0) {
+        return
+      }
+
+      const files = Array.from(e.target.files)
+      setGeneralAttachments(prev => [...prev, ...files])
+    } catch (error) {
+      console.error('Error handling attachment change:', error)
+      alert('Failed to attach files. Please try again.')
+    }
+  }, [])
+
+  /**
+   * Remove a general attachment
+   * @param {number} index - Index of attachment to remove
+   */
+  const handleRemoveGeneralAttachment = useCallback((index) => {
+    try {
+      if (typeof index !== 'number' || index < 0) {
+        console.error('Invalid attachment index')
+        return
+      }
+
+      setGeneralAttachments(prev => prev.filter((_, i) => i !== index))
+    } catch (error) {
+      console.error('Error removing attachment:', error)
+      alert('Failed to remove attachment. Please try again.')
+    }
+  }, [])
+
+  /**
+   * Handle drag over event for file drop zone
+   * @param {DragEvent} e - Drag event
+   */
+  const handleDragOver = useCallback((e) => {
+    try {
+      e.preventDefault()
+      setIsDragging(true)
+    } catch (error) {
+      console.error('Error handling drag over:', error)
+    }
+  }, [])
+
+  /**
+   * Handle drag leave event for file drop zone
+   * @param {DragEvent} e - Drag event
+   */
+  const handleDragLeave = useCallback((e) => {
+    try {
+      e.preventDefault()
+      setIsDragging(false)
+    } catch (error) {
+      console.error('Error handling drag leave:', error)
+    }
+  }, [])
+
+  /**
+   * Handle file drop event
+   * @param {DragEvent} e - Drop event
+   */
+  const handleDrop = useCallback((e) => {
+    try {
+      e.preventDefault()
+      setIsDragging(false)
+      
+      if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) {
+        return
+      }
+
+      const files = Array.from(e.dataTransfer.files)
+      setGeneralAttachments(prev => [...prev, ...files])
+    } catch (error) {
+      console.error('Error handling file drop:', error)
+      alert('Failed to upload files. Please try again.')
+    }
+  }, [])
+
+  /**
+   * Handle next button click
+   * Validates current step before proceeding
+   */
+  const handleNext = useCallback(() => {
+    try {
+      // Clear previous errors
+      setErrors({})
+      
+      // Validate Step 1 - Basic Info
+      if (currentStep === 1) {
+        const newErrors = {}
+        
+        if (!formData.title || formData.title.trim().length < 5) {
+          newErrors.title = 'Ballot title must be at least 5 characters'
+        }
+        
+        if (!formData.description || formData.description.trim().length < 10) {
+          newErrors.description = 'Ballot description must be at least 10 characters'
+        }
+        
+        // If validation fails, show errors and don't proceed
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors)
+          return
+        }
+      }
+      
+      // Validate Step 2 - Motions
+      if (currentStep === 2 && motions.length === 0) {
+        alert('Please add at least one motion before continuing.')
+        return
+      }
+      
+      // Move to next step
+      if (currentStep < 4) {
+        setCurrentStep(currentStep + 1)
+      }
+    } catch (error) {
+      console.error('Error proceeding to next step:', error)
+      alert('An error occurred. Please try again.')
+    }
+  }, [currentStep, motions.length, formData.title, formData.description])
+
+  /**
+   * Handle back button click
+   * Navigate to previous step
+   */
+  const handleBack = useCallback(() => {
+    try {
+      if (currentStep > 1) {
+        setCurrentStep(currentStep - 1)
+      }
+    } catch (error) {
+      console.error('Error going back:', error)
+    }
+  }, [currentStep])
+
+  /**
+   * Handle save draft button click
+   * In a real app, this would save the current state to localStorage or backend
+   */
+  const handleSaveDraft = useCallback(() => {
+    try {
+      console.log('Saving draft...')
+      // TODO: Implement draft saving functionality
+      // This could save to localStorage or send to backend
+      const draftData = {
+        formData,
+        motions,
+        generalAttachments: generalAttachments.map(f => f.name), // Can't serialize File objects
+        currentStep
+      }
+      
+      console.log('Draft data:', draftData)
+      alert('Draft saved! (This is a placeholder - implement actual save logic)')
+    } catch (error) {
+      console.error('Error saving draft:', error)
+      alert('Failed to save draft. Please try again.')
+    }
+  }, [formData, motions, generalAttachments, currentStep])
+
+  /**
+   * Handle final submit
+   * Validates all data and calls onSubmit callback
+   */
+  const handleSubmit = useCallback(() => {
+    try {
+      // Final validation
+      if (!formData.title || !formData.description) {
+        alert('Please complete all required fields')
+        return
+      }
+
+      if (motions.length === 0) {
+        alert('Please add at least one motion')
+        return
+      }
+
+      // Prepare ballot data
+      const ballotData = {
+        title: formData.title,
+        description: formData.description,
+        deadlineDate: formData.deadlineDate,
+        deadlineTime: formData.deadlineTime,
+        corporation: formData.corporation,
+        personName: formData.personName,
+        personPosition: formData.personPosition,
+        personAddress: formData.personAddress,
+        personContact: formData.personContact,
+        secretaryName: formData.secretaryName,
+        motions: motions,
+        attachments: generalAttachments
+      }
+
+      console.log('Submitting ballot:', ballotData)
+      onSubmit(ballotData)
+    } catch (error) {
+      console.error('Error submitting ballot:', error)
+      alert('Failed to publish ballot. Please try again.')
+    }
   }, [formData, motions, generalAttachments, onSubmit])
 
-  // Check if current step is valid
+  /**
+   * Check if current step is valid
+   * Used to enable/disable the Next button
+   * @returns {boolean} Whether the current step has valid data
+   */
   const isStepValid = useCallback(() => {
-    if (currentStep === 1) {
-      return formData.title.trim().length >= 5 && 
-             formData.description.trim().length >= 10
+    try {
+      if (currentStep === 1) {
+        return formData.title.trim().length >= 5 && 
+               formData.description.trim().length >= 10
+      }
+      if (currentStep === 2) {
+        return motions.length > 0
+      }
+      // Steps 3 and 4 are always valid (attachments are optional)
+      return true
+    } catch (error) {
+      console.error('Error validating step:', error)
+      return false
     }
-    if (currentStep === 2) {
-      return motions.length > 0
-    }
-    return true
   }, [currentStep, formData.title, formData.description, motions.length])
 
+  // ============================================================================
+  // RENDER
+  // ============================================================================
+
+  // Don't render modal if not open
   if (!isOpen) return null
 
-  // Render Step Content
+  /**
+   * Render the appropriate step content based on currentStep
+   * @returns {JSX.Element} The step component
+   */
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return <Step1BasicInfo formData={formData} handleInputChange={handleInputChange} errors={errors} />
-      case 2:
-        return (
-          <Step2Motions
-            motions={motions}
-            newMotion={newMotion}
-            onMotionInputChange={handleMotionInputChange}
-            onFileChange={handleFileChange}
-            onAddMotion={handleAddMotion}
-            onEditMotion={handleEditMotion}
-            onRemoveMotion={handleRemoveMotion}
-          />
-        )
-      case 3:
-        return (
-          <Step3Attachments
-            generalAttachments={generalAttachments}
-            isDragging={isDragging}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onFileChange={handleGeneralAttachmentChange}
-            onRemoveAttachment={handleRemoveGeneralAttachment}
-          />
-        )
-      case 4:
-        return (
-          <Step4Review
-            formData={formData}
-            motions={motions}
-            generalAttachments={generalAttachments}
-          />
-        )
-      default:
-        return null
+    try {
+      switch (currentStep) {
+        case 1:
+          return <Step1BasicInfo formData={formData} handleInputChange={handleInputChange} errors={errors} />
+        case 2:
+          return (
+            <Step2Motions
+              motions={motions}
+              newMotion={newMotion}
+              onMotionInputChange={handleMotionInputChange}
+              onFileChange={handleFileChange}
+              onAddMotion={handleAddMotion}
+              onEditMotion={handleEditMotion}
+              onRemoveMotion={handleRemoveMotion}
+            />
+          )
+        case 3:
+          return (
+            <Step3Attachments
+              generalAttachments={generalAttachments}
+              isDragging={isDragging}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onFileChange={handleGeneralAttachmentChange}
+              onRemoveAttachment={handleRemoveGeneralAttachment}
+            />
+          )
+        case 4:
+          return (
+            <Step4Review
+              formData={formData}
+              motions={motions}
+              generalAttachments={generalAttachments}
+            />
+          )
+        default:
+          console.error('Invalid step:', currentStep)
+          return null
+      }
+    } catch (error) {
+      console.error('Error rendering step content:', error)
+      return (
+        <div className="error-state">
+          <p>An error occurred while loading this step. Please try again.</p>
+        </div>
+      )
     }
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div 
+      className="modal-overlay" 
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">

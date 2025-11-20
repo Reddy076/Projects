@@ -29,32 +29,60 @@ const Dialog = ({
 }) => {
   const dialogRef = useRef(null)
   
-  // Handle click outside
+  // ============================================================================
+  // EFFECTS & EVENT HANDLERS
+  // ============================================================================
+
+  /**
+   * Handle click outside the dialog
+   * Closes dialog if closeOnOutsideClick is enabled
+   */
   useClickOutside(dialogRef, () => {
-    if (closeOnOutsideClick && isOpen) {
-      onClose()
+    try {
+      if (closeOnOutsideClick && isOpen) {
+        onClose()
+      }
+    } catch (error) {
+      console.error('Error handling outside click:', error)
     }
   })
 
-  // Handle escape key
+  /**
+   * Handle escape key press and body scroll
+   * - Closes dialog on Escape key
+   * - Prevents body scroll when dialog is open
+   */
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose()
+      try {
+        if (e.key === 'Escape' && isOpen) {
+          onClose()
+        }
+      } catch (error) {
+        console.error('Error handling escape key:', error)
       }
     }
 
     if (isOpen) {
+      // Add escape key listener
       document.addEventListener('keydown', handleEscape)
+      
+      // Prevent body scroll when dialog is open
       document.body.style.overflow = 'hidden'
     }
 
+    // Cleanup
     return () => {
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = 'unset'
     }
   }, [isOpen, onClose])
 
+  // ============================================================================
+  // RENDER
+  // ============================================================================
+
+  // Don't render if dialog is not open
   if (!isOpen) return null
 
   return (

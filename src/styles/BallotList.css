@@ -252,6 +252,17 @@
   color: hsl(var(--foreground) / 1);
 }
 
+/* Highlight title column on hover */
+.ballots-table tbody td:nth-child(2) {
+  cursor: pointer;
+  transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+.ballots-table tbody tr:hover td:nth-child(2) {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
 /* Status Badge */
 .status-badge {
   display: inline-block;

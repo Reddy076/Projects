@@ -1,7 +1,30 @@
 import React from 'react'
 
-// Centralized icon component to reduce SVG duplication
+/**
+ * Icon Component
+ * 
+ * Centralized icon component using inline SVGs to reduce duplication.
+ * All icons are rendered as inline SVG elements with configurable properties.
+ * 
+ * Benefits:
+ * - No external icon library dependencies
+ * - Consistent styling across all icons
+ * - Easily customizable size, stroke width, and color
+ * - Tree-shakeable (only used icons are included in bundle)
+ * 
+ * @param {string} name - Name of the icon to render
+ * @param {number} size - Size of the icon in pixels (default: 20)
+ * @param {number} strokeWidth - Width of the stroke (default: 2)
+ * @param {string} className - Additional CSS classes
+ * @param {Object} props - Additional props to pass to the SVG element
+ * 
+ * @returns {JSX.Element|null} The icon SVG element or null if icon not found
+ */
 const Icon = ({ name, size = 20, strokeWidth = 2, className = '', ...props }) => {
+  // ============================================================================
+  // ICON DEFINITIONS
+  // All icons use the same viewBox (0 0 24 24) for consistency
+  // ============================================================================
   const icons = {
     menu: (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
@@ -130,9 +153,28 @@ const Icon = ({ name, size = 20, strokeWidth = 2, className = '', ...props }) =>
         <path d="M12 1v6m0 6v6m9-9h-6M7 12H1m16.24-7.24l-4.24 4.24m0 5.66l4.24 4.24M7.76 4.76l4.24 4.24m0 5.66l-4.24 4.24"></path>
       </svg>
     ),
+    // X icon for close buttons
+    x: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} className={className} {...props}>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    ),
   }
 
-  return icons[name] || null
+  // ============================================================================
+  // RENDER
+  // ============================================================================
+
+  // Return the requested icon or null if not found
+  const icon = icons[name]
+  
+  if (!icon) {
+    console.warn(`Icon "${name}" not found. Available icons:`, Object.keys(icons).join(', '))
+    return null
+  }
+
+  return icon
 }
 
 export default Icon
