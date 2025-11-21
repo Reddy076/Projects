@@ -192,18 +192,18 @@
 }
 
 .ballots-table thead tr {
-  background-color: hsl(var(--background) / 1);
+  background-color: transparent;
 }
 
 .ballots-table th {
-  height: 2.75rem;
+  height: 2.5rem;
   padding: 0.75rem 1rem;
   text-align: left;
   vertical-align: middle;
   font-weight: 500;
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground) / 1);
-  border-bottom: 1px solid hsl(var(--border) / 1);
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
 }
 
 .ballots-table th.th-sortable {
@@ -212,7 +212,7 @@
 }
 
 .ballots-table th.th-sortable:hover {
-  background-color: hsl(var(--muted) / 0.2);
+  background-color: hsl(var(--muted) / 0.15);
 }
 
 .th-content {
@@ -226,18 +226,20 @@
   width: 0.75rem;
   color: hsl(var(--muted-foreground) / 1);
   flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.sort-icon.sort-active {
+  color: hsl(var(--primary) / 1);
 }
 
 .ballots-table tbody tr {
   transition: background-color 0.2s;
+  background-color: transparent;
 }
 
-.ballots-table tbody tr:nth-child(odd) {
-  background-color: hsl(var(--muted) / 0.2);
-}
-
-.ballots-table tbody tr:nth-child(even) {
-  background-color: hsl(var(--background) / 1);
+.ballots-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .ballots-table tbody tr:hover {
@@ -245,30 +247,25 @@
 }
 
 .ballots-table tbody td {
-  height: 3.5rem;
-  padding: 0.875rem 1rem;
+  height: 3rem;
+  padding: 0.75rem 1rem;
   vertical-align: middle;
   font-size: 0.875rem;
   color: hsl(var(--foreground) / 1);
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
 }
 
-/* Highlight title column on hover */
+/* Title column styling */
 .ballots-table tbody td:nth-child(2) {
   cursor: pointer;
-  transition: color 0.2s ease, font-weight 0.2s ease;
-}
-
-.ballots-table tbody tr:hover td:nth-child(2) {
-  color: #3b82f6;
-  font-weight: 600;
 }
 
 /* Status Badge */
 .status-badge {
   display: inline-block;
-  padding: 5px 14px;
+  padding: 4px 12px;
   border-radius: 6px;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-align: center;
   white-space: nowrap;
@@ -283,7 +280,7 @@
 .participation-cell {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 180px;
 }
 
@@ -305,9 +302,9 @@
 
 .participation-bar {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background-color: hsl(var(--muted) / 0.6);
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
 }
 
@@ -319,8 +316,8 @@
 
 /* Action Button */
 .action-btn {
-  padding: 6px 16px;
-  font-size: 0.875rem;
+  padding: 4px 12px;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: hsl(var(--foreground) / 1);
   background-color: hsl(var(--background) / 1);
@@ -334,6 +331,35 @@
 .action-btn:hover {
   background-color: hsl(var(--muted) / 0.5);
   border-color: hsl(var(--foreground) / 0.3);
+}
+
+/* Dark Mode Styles */
+.dark-mode .participation-percentage {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.dark-mode .participation-count {
+  color: #9ca3af;
+}
+
+.dark-mode .action-btn {
+  color: #e5e7eb;
+  background-color: transparent;
+  border-color: #4b5563;
+}
+
+.dark-mode .action-btn:hover {
+  background-color: #374151;
+  border-color: #6b7280;
+}
+
+.dark-mode .ballots-table tbody td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .ballots-table th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Motions View */

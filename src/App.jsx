@@ -3,6 +3,7 @@ import NavigationSidebar from './components/layout/NavigationSidebar'
 import AppHeader from './components/layout/AppHeader'
 import BallotList from './components/ballot/BallotList'
 import { DEFAULT_CORPORATION } from './constants'
+import { DEFAULT_BALLOTS } from './utils/defaultValues'
 import './styles/App.css'
 
 /**
@@ -21,8 +22,8 @@ function App() {
   // Currently selected corporation from the dropdown
   const [selectedCorporation, setSelectedCorporation] = useState(DEFAULT_CORPORATION)
   
-  // Array of all ballots in the system
-  const [ballots, setBallots] = useState([])
+  // Array of all ballots in the system - initialized with default ballots
+  const [ballots, setBallots] = useState(DEFAULT_BALLOTS)
   // Sidebar visibility state - responsive by default (open on desktop, closed on mobile)
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
     try {

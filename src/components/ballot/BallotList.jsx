@@ -105,6 +105,7 @@ const BallotList = React.memo(({ ballots, onAddBallot }) => {
   const [filterCorporation, setFilterCorporation] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
 
   // ============================================================================
   // EVENT HANDLERS
@@ -194,6 +195,28 @@ const BallotList = React.memo(({ ballots, onAddBallot }) => {
     }
   }, [])
 
+  /**
+   * Handle column sort
+   * @param {string} key - The column key to sort by
+   */
+  const handleSort = useCallback((key) => {
+    try {
+      setSortConfig(prevConfig => {
+        // If clicking the same column, toggle direction
+        if (prevConfig.key === key) {
+          return {
+            key,
+            direction: prevConfig.direction === 'asc' ? 'desc' : 'asc'
+          }
+        }
+        // If clicking a new column, set to ascending
+        return { key, direction: 'asc' }
+      })
+    } catch (error) {
+      console.error('Error sorting column:', error)
+    }
+  }, [])
+
   // ============================================================================
   // FILTERED & COMPUTED DATA
   // ============================================================================
@@ -236,12 +259,43 @@ const BallotList = React.memo(({ ballots, onAddBallot }) => {
         })
       }
 
+      // Sort ballots based on sortConfig
+      if (sortConfig.key) {
+        filtered.sort((a, b) => {
+          let aValue = a[sortConfig.key]
+          let bValue = b[sortConfig.key]
+
+          // Handle different data types
+          if (sortConfig.key === 'deadline') {
+            // Sort by date
+            aValue = new Date(aValue).getTime()
+            bValue = new Date(bValue).getTime()
+          } else if (sortConfig.key === 'participation') {
+            // Sort by number
+            aValue = Number(aValue) || 0
+            bValue = Number(bValue) || 0
+          } else if (sortConfig.key === 'corporation' || sortConfig.key === 'title') {
+            // Sort by string
+            aValue = String(aValue || '').toLowerCase()
+            bValue = String(bValue || '').toLowerCase()
+          }
+
+          if (aValue < bValue) {
+            return sortConfig.direction === 'asc' ? -1 : 1
+          }
+          if (aValue > bValue) {
+            return sortConfig.direction === 'asc' ? 1 : -1
+          }
+          return 0
+        })
+      }
+
       return filtered
     } catch (error) {
       console.error('Error filtering ballots:', error)
       return []
     }
-  }, [ballots, filterCorporation, searchQuery, activeTab])
+  }, [ballots, filterCorporation, searchQuery, activeTab, sortConfig])
 
   /**
    * Format date for display
@@ -358,29 +412,45 @@ const BallotList = React.memo(({ ballots, onAddBallot }) => {
             <table className="ballots-table" role="table" aria-label="Ballots table">
               <thead>
                 <tr>
-                  <th className="th-sortable" style={{width: '220px'}}>
+                  <th className="th-sortable" style={{width: '220px'}} onClick={() => handleSort('corporation')}>
                     <div className="th-content">
                       <span>Corporation</span>
-                      <Icon name="sort" size={24} className="sort-icon" />
+                      <Icon 
+                        name="sort" 
+                        size={24} 
+                        className={`sort-icon ${sortConfig.key === 'corporation' ? 'sort-active' : ''}`}
+                      />
                     </div>
                   </th>
-                  <th className="th-sortable" style={{width: '280px'}}>
+                  <th className="th-sortable" style={{width: '280px'}} onClick={() => handleSort('title')}>
                     <div className="th-content">
                       <span>Title</span>
-                      <Icon name="sort" size={24} className="sort-icon" />
+                      <Icon 
+                        name="sort" 
+                        size={24} 
+                        className={`sort-icon ${sortConfig.key === 'title' ? 'sort-active' : ''}`}
+                      />
                     </div>
                   </th>
                   <th style={{width: '120px'}}>Status</th>
-                  <th className="th-sortable" style={{width: '200px'}}>
+                  <th className="th-sortable" style={{width: '200px'}} onClick={() => handleSort('participation')}>
                     <div className="th-content">
                       <span>Participation</span>
-                      <Icon name="sort" size={24} className="sort-icon" />
+                      <Icon 
+                        name="sort" 
+                        size={24} 
+                        className={`sort-icon ${sortConfig.key === 'participation' ? 'sort-active' : ''}`}
+                      />
                     </div>
                   </th>
-                  <th className="th-sortable" style={{width: '140px'}}>
+                  <th className="th-sortable" style={{width: '140px'}} onClick={() => handleSort('deadline')}>
                     <div className="th-content">
                       <span>Deadline</span>
-                      <Icon name="sort" size={24} className="sort-icon" />
+                      <Icon 
+                        name="sort" 
+                        size={24} 
+                        className={`sort-icon ${sortConfig.key === 'deadline' ? 'sort-active' : ''}`}
+                      />
                     </div>
                   </th>
                   <th style={{width: '100px'}}>Action</th>
